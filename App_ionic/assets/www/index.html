@@ -1,0 +1,250 @@
+<html ng-app="ionicApp">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+
+    <title>Side Menus</title>
+
+ <link href="css/ionic.css" rel="stylesheet">
+        <script src="js/ionic.bundle.js"></script>
+        <script src="js/layout.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/cordova-2.4.0.js"></script>
+<script type="text/javascript" charset="utf-8">
+
+   document.addEventListener("deviceready", onDeviceReady, false);
+
+    function onDeviceReady() {
+           navigator.splashscreen.show();
+           db = window.openDatabase("ordens", "1.0", "Ordens", 20000);
+          
+    }
+    
+    
+    </script>
+   <script type="text/javascript" charset="utf-8" src="js/foto.js"></script>
+   <script type="text/javascript" charset="utf-8" src="js/bd.js"></script>
+  </head>
+
+  <body>
+
+    <div ng-controller="MainCtrl">
+      <ion-nav-view></ion-nav-view>
+    </div>
+
+    <script id="event-menu.html" type="text/ng-template">
+      <ion-side-menus>
+
+        <ion-side-menu-content>
+          <ion-nav-bar class="bar-positive">
+            <ion-nav-back-button class="button-icon ion-arrow-left-c">
+            </ion-nav-back-button>
+          </ion-nav-bar>
+          <ion-nav-buttons side="left">
+            <button class="button button-icon button-clear ion-navicon" ng-click="toggleLeft()">
+            
+            </button>
+          </ion-nav-buttons>
+          <ion-nav-view name="menuContent"></ion-nav-view>
+        </ion-side-menu-content>
+
+        <ion-side-menu side="left">
+          <ion-header-bar class="bar-dark">
+            <h1 class="title">Menu</h1>
+          </ion-header-bar>
+          <ion-content>
+            <div class="list">
+              <a href="#/event/home" class="item item-icon-left">
+              <i class="icon ion-home"></i>
+              Home</a>
+              <a href="#/event/bancada" class="item item-icon-left">
+              <i class="icon ion-hammer"></i>
+              Bancada
+              <span class="badge badge-calm">0</span></a>
+              <a href="#/event/aguardando" class="item item-icon-left">
+              <i class="icon ion-pin"></i>
+              Aguardando</a>
+              <a href="#/event/pronto" class="item item-icon-left">
+               <i class="icon ion-checkmark-round"></i>
+               Prontos</a>
+              <a href="#/event/entregue" class="item item-icon-left">
+              <i class="icon ion-paper-airplane"></i>
+              Entregues</a>
+              <a href="#/event/adicionar" class="item item-icon-left">
+              <i class="icon ion-plus"></i>
+              Adicionar Iten</a>
+
+            </div>
+          </ion-content>
+        </ion-side-menu>
+
+      </ion-side-menus>
+    </script>
+
+    <script id="home.html" type="text/ng-template">
+      <ion-view title="Oficina">
+        <ion-content padding="true">
+         <img class="full-image" src="images/pc_help.png">
+          <p>Swipe to the right to reveal the left menu.</p>
+          <p>(On desktop click and drag from left to right)</p>
+        </ion-content>
+      </ion-view>
+    </script>
+
+    <script id="adicionar.html" type="text/ng-template">
+      <ion-view title="Nova OS" >
+        <ion-content padding="true">
+          <form class="list" ng-show="showForm">
+            <div class="item item-divider">
+             Dados da OS
+            </div>
+            <label class="item item-input">
+              <input type="number"  placeholder="Número da OS" id="numero" >
+            </label>
+            <label class="item item-input">
+              <input type="text" placeholder="Cliente" id="cliente">
+            </label>
+            <label class="item item-input">
+              <input type="text" placeholder="Descrição" id="descricao">
+            </label>
+            <div class="item item-divider">
+             Dados adicionais
+            </div>
+            <label class="item item-input">
+              <input type="text" placeholder="Defeito" ng-model="attendee.defeito">
+            </label>
+                       
+            <div class="row">
+                <div class="col col-75">
+                <img id="smallImage" src="images/camera.png" />
+    			<img style="display:none;" id="largeImage" src="" />
+                </div>
+                <div class="col">
+                <button class="button button-positive button-block" onclick="capturePhoto();">Foto</button>
+                </div>
+                </div>
+                <input type="hidden" id="urlFoto">
+            <div class="padding">
+              <button class="button button-block button-balanced" ng-click="submit()">Salvar</button>
+            </div>
+          </form>
+
+          <div ng-hide="showForm">
+            <pre ng-bind="attendee | json"></pre>
+            <a href="#/event/attendees">View attendees</a>
+          </div>
+
+
+
+
+        </ion-content>
+      </ion-view>
+    </script>
+
+
+    
+    <script id="attendees.html" type="text/ng-template">
+      <ion-view title="Event Attendees" left-buttons="leftButtons">
+        <ion-content>
+          <div class="list">
+            <ion-toggle ng-repeat="attendee in attendees | orderBy:'firstname' | orderBy:'lastname'"
+                        ng-model="attendee.arrived"
+                        ng-change="arrivedChange(attendee)">
+              {{ attendee.firstname }}
+              {{ attendee.lastname }}
+            </ion-toggle>
+            <div class="item item-divider">
+              Activity
+            </div>
+            <div class="item" ng-repeat="msg in activity">
+              {{ msg }}
+            </div>
+          </div>
+        </ion-content>
+      </ion-view>
+    </script>
+    
+     <script id="bancada.html" type="text/ng-template">
+      <ion-view title="Bancada">
+        <ion-content padding="true">
+          <div class="list" id="ListaItens"></div>
+        </ion-content>
+      </ion-view>
+    </script>
+    
+    <script id="aguardando.html" type="text/ng-template">
+      <ion-view title="Aguardando">
+        <ion-content padding="true">
+          <div class="list" id="ListaItens"></div>
+        </ion-content>
+      </ion-view>
+    </script>
+    
+    <script id="pronto.html" type="text/ng-template">
+      <ion-view title="Prontos">
+        <ion-content padding="true">
+          <div class="list" id="ListaItens"></div>
+        </ion-content>
+      </ion-view>
+    </script>
+     <script id="entregue.html" type="text/ng-template">
+      <ion-view title="Entregues">
+        <ion-content padding="true">
+          <div class="list" id="ListaItens"></div>
+        </ion-content>
+      </ion-view>
+    </script>
+    
+    <script id="single.html" type="text/ng-template">
+      <ion-view title="Single">
+        <ion-content padding="true">
+          <div class="list card">
+
+  <div class="item item-avatar">
+    <img src="images/vw.png">
+    <h2 id="numeroOs"></h2>
+    <p id="descSingle">November 05, 1955</p>
+  </div>
+
+  <div class="item item-body">
+    <img id="imgSinlge" class="full-image" src="">
+    
+    <p id="datSingle">November 05, 1955</p>
+    <p id="clientSingle">
+      Emerson Cesar batcellos
+    </p>
+    <p id="defSingle">
+     <i class="icon ion-settings" style="font-size:30px" ></i> Não liga
+    </p>
+     <p id="infoSingle">
+     <i class="icon ion-information-circled" style="font-size:30px" ></i> Carregador BATERIA
+    </p>
+    <p>
+      <a href="#" id="statusSingle" class="subdued">Aguardando autorização</a>
+    </p>
+  </div>
+
+  <div class="item tabs tabs-secondary tabs-icon-left">
+  <a class="tab-item" href="#">
+      <i class="icon ion-compose"></i>
+      Editar
+    </a>
+    <a class="tab-item" id="excluiSingle" onclick="">
+      <i class="icon ion-trash-a"></i>
+     Excluir
+    </a>
+    <a class="tab-item" ng-click="showActionsheet()">
+      <i class="icon ion-share"></i>
+      Mais
+    </a>
+  </div>
+  
+ 
+</div>
+        </ion-content>
+      </ion-view>
+    </script>
+    
+    
+    
+  </body>
+</html>
